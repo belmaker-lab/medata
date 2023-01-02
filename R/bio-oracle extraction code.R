@@ -30,8 +30,8 @@ environment.layers <- sdmpredictors::load_layers(layercodes = c("BO_sstmean", # 
 
 # Extract environmental values for sites in medata ------------------------
 
-my.sites.environment <- data.frame(site = my.sites$site,
-                                   raster::extract(environment.layers, my.sites[,2:3]))
+my.sites.environment <- bind_cols(my.sites, 
+                                  raster::extract(environment.layers, my.sites[,2:3]))
 my.sites.environment
 
 # Check for NAs
