@@ -1,0 +1,175 @@
+---
+title: "Modefing Croatia data"
+author: "Ori Frid"
+date: "January 8, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(readr)
+library(dplyr)
+library(tidyverse)
+library(reshape2)
+
+croatia_data <- read.csv("D:/Google Drive/PhD/all data/belmaker_data/croatia/croatia_data.csv")
+
+biob_1=croatia_data
+
+colnames(biob_1)
+
+biob_1=biob_1%>%
+  filter(Distance<=2.5)
+
+colnames(biob_1)
+
+#creating transect_id caled here already trans
+
+biob_1$transect=paste(biob_1$Location,biob_1$SiteNo,biob_1$Trans_No,biob_1$Reserve)
+
+transect=unique(biob_1$transect)
+
+#this is the number of transects after bioblitz data
+
+trans=seq(2046,2231)
+
+transect_id=cbind.data.frame(transect,trans)
+biob_2=merge(biob_1,transect_id,all.x = T)
+
+biob_2$Right.observer=as.character(biob_2$Right.observer)
+biob_2$Left.observer=as.character(biob_2$Left.observer)
+
+biob_2$observer<-ifelse(biob_2$Direction=="Right",biob_2$`Right.observer`,biob_2$`Left.observer`)
+
+
+colnames(biob_2)
+
+```
+
+## choosing one observer in random
+
+```{r}
+
+biob=data.frame()
+
+for(i in unique(biob_2$transect)){
+  trans=biob_2%>%
+  filter(biob_2$transect==i)
+  
+  observer=unique(trans$observer)
+  random_observer=sample(observer,1)
+  
+  trans=trans%>%
+    filter(observer==random_observer)
+  
+  biob=rbind.data.frame(biob,trans)
+
+}
+
+```
+
+###entering new colomns
+
+```{r cars}
+
+#data.origin,country,site,site.code,sub.site,transect,trans,species,sp.length,sp.n,season,protection,
+#enforcement,total.mpa.ha,size.notake,yr.creation,age.reserve.yr,rug,lon,lat,d.range.code,depth.range,depth,
+#t.area,t.length,t.width
+
+colnames(biob)
+
+names(biob)[names(biob) == 'Location'] <- 'site'
+names(biob)[names(biob) == 'SiteNo'] <- 'site.code'
+names(biob)[names(biob) == 'Trans_No'] <- 'sub.site'
+
+names(biob)[names(biob) == 'Species'] <- "species"
+names(biob)[names(biob) == 'Length'] <- 'sp.length'
+names(biob)[names(biob) == 'Number_Ind'] <- 'sp.n'
+
+names(biob)[names(biob) == 'Lat.N.'] <- 'lat'
+names(biob)[names(biob) == 'Lon.E.'] <- 'lon'
+
+names(biob)[names(biob) == 'Depth.m.'] <- 'depth'
+
+biob$d.range.code=NA
+biob$depth.range=NA
+
+biob$season="Summer"
+biob$rug=NA
+
+biob$protection=ifelse(biob$Reserve=="In","YES","NO")
+biob$data.origin="Belmaker"
+biob$country="Croatia"
+
+biob$t.area=125
+biob$t.length=25
+biob$t.width=5
+
+biob$enforcement=ifelse(biob$site=="Brijuni","3","1")
+
+biob$size.notake=biob$size.notake[biob$site == "Brijuni"] <- 2651
+biob$yr.creation=biob$yr.creation[biob$site == "Brijuni"] <- 1983
+biob$age.reserve.yr=biob$age.reserve.yr[biob$site == "Brijuni"] <- 35
+biob$total.mpa.ha=biob$total.mpa.ha[biob$site == "Brijuni"] <- 2651
+
+biob$total.mpa.ha=biob$total.mpa.ha[biob$site == "Kornati"] <- 16600
+biob$yr.creation=biob$yr.creation[biob$site == "Kornati"] <- 1980
+biob$age.reserve.yr=biob$age.reserve.yr[biob$site == "Kornati"] <-38
+
+biob$total.mpa.ha=biob$total.mpa.ha[biob$site == "Miljet"] <- 2375
+biob$yr.creation=biob$yr.creation[biob$site == "Miljet"] <- 1960
+biob$age.reserve.yr=biob$age.reserve.yr[biob$site == "Miljet"] <-57
+
+a=c("data.origin","country","site","site.code","sub.site","transect","trans","species","sp.length",
+    "sp.n","season","protection","enforcement","total.mpa.ha","size.notake","yr.creation","age.reserve.yr","rug",
+    "lon","lat","d.range.code","depth.range","depth","t.area","t.length","t.width")
+
+colnames(biob)
+
+
+biob=biob%>%
+  select(-Trip.date,-Start.time,-End.time,-Sea.condition,-DepthRange,-Time,-Right.observer,
+         -Left.observer,-Azimuth,-VisibilityBlocks,-WaterTemp,-Direction,-Distance,-Family,-Order,
+         -Reserve,-observer)
+
+
+setdiff(a,colnames(biob))
+setdiff(colnames(biob),a)
+
+colnames(biob)
+
+biob=biob[c("data.origin","country","site","site.code","sub.site","transect","trans","species","sp.length",
+    "sp.n","season","protection","enforcement","total.mpa.ha","size.notake","yr.creation","age.reserve.yr","rug",
+    "lon","lat","d.range.code","depth.range","depth","t.area","t.length","t.width")]
+
+setdiff(a,colnames(biob))
+setdiff(colnames(biob),a)
+
+biob$site[biob$site == "Mljet"] <- "Miljet"
+
+biob$site <- factor(biob$site, levels = c("Brijuni","Kornati","Miljet"))
+
+unique(biob$site)
+biob$lon=as.character(biob$lon)
+biob$lat=as.character(biob$lat)
+
+biob$lat[biob$lat == "17.347082"] <- "42.78445"
+
+biob$lon=as.numeric(biob$lon)
+biob$lat=as.numeric(biob$lat)
+
+new_DF <- biob[is.na(biob$lat),]
+
+coords=unique(biob[c("trans","lat")])
+
+str(biob)
+
+
+biob$enforcement[biob$site=="Brijuni" & biob$protection=="NO"]<-0
+
+
+write.csv(biob,"D:/Google Drive/PhD/all data/belmaker_data/croatia/croatia_data_modified_25.06.19.csv")
+
+write.csv(biob,"C:/Users/Farida/Google Drive/PhD/all data/belmaker_data/croatia/croatia_data_modified_25.06.19.csv") 
+
+```
