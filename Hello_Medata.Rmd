@@ -18,9 +18,7 @@ library(tidyverse)
 ```
 
 # Introduction
-Medata is a dataset of underwater fish census surveys conducted along the Mediterranean sea. The dataset includes environmental variables, as well as conservation information regarding MPAs.
-
-This is a collaboration of [Belmaker Lab](https://belmaker.weebly.com/) (Tel Aviv University, Israel), [Ernesto Azzuro](https://www.researchgate.net/profile/Ernesto_Azzurro) (ISPRA, Italy), [Joachim Claudet](http://www.joachimclaudet.com/) (CNRS, France) and [Enric Sala](https://www.researchgate.net/profile/Enric_Sala).
+MEData is a dataset of underwater fish census surveys conducted along the Mediterranean sea. The dataset includes environmental variables, as well as conservation information regarding MPAs.
 
 
 ```{r setup data}
@@ -46,13 +44,9 @@ medata <- read_rds("data/medata.Rds")
 | `yr.creation`   | *int* | MPA establishment year |
 | `age.reserve.yr`| *int* | age of the MPA in years (corresponds to `yr.creation`) - should be updated before used, since this is time, and time goes by... |
 | `depth`         | *num* | depth of survey in metres |
-| `tmean`         | *num* | annual mean temperature (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `trange`        | *num* | annual temperature range (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
+| `tmean`         | *num* | annual mean sea surface temperature temperature (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
 | `sal_mean`      | *num* | annual mean salinity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
 | `pp_mean`       | *num* | annual mean primary productivity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `pp_range`      | *num* | annual primary production range (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `pp_range`      | *num* | annual primary production range (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `pp_range`      | *num* | annual primary production range (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
 | `species`       | *fct* | species scientific name (format: *Genus.species*); some species are identified to Genus level (includes 'spp' suffix)  or family level (includes -dae suffix) |
 | `sp.n`          | *int* | fish count - how many individuals of this species were observed? |
 | `sp.length`     | *num* | length of fish in cm |
@@ -109,7 +103,7 @@ medata %>% distinct(species) %>% arrange(.$species) %>%
 # Methods
 
 ## Data collection
-Visual fish census surveys took place in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of approximately 45,346 observations of 118 species of fish and includes mostly abundance data (except *asinara_add* site which contains presence-absence data, without this site, there are 42,513 records).
+Visual fish census surveys took place between the years 2003-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of approximately 42,834 observations of 118 species of fish and includes mostly abundance data.
 
 ```{r locations map, echo=FALSE}
 med_map <- sf::st_read("Med_World_Seas_IHO_v3_MarineRegions/Medit_seas_IHO.shp", quiet = TRUE)
@@ -126,6 +120,8 @@ ggplot(medata) +
 
 ```
 Figure 1. Survey sites and temperatures (in degrees celsius).
+
+The sampling protocol is described in [Frid Ori, et al., 2022]( https://doi.org/10.12681/mms.26423).
 
 ## Data acquired from other resources
 
