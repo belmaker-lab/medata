@@ -202,7 +202,7 @@ Froese, R. and D. Pauly. Editors. 2021.FishBase. World Wide Web electronic publi
 
 Boettiger C, Temple Lang D, Wainwright P (2012). “rfishbase: exploring, manipulating and visualizing FishBase data from R.” Journal of Fish Biology
 
-Assis J, Tyberghein L, Bosch S, Heroen V, SerrÃ£o E, De Clerck O, Tittensor D (2018). Bio-ORACLE v2.0: Extending marine data layers for bioclimatic modelling." _Global Ecology and Biogeography_, *27*(3),277-284. doi: 10.1111/geb.12693 (https://doi.org/10.1111/geb.12693).                             
+Assis J, Tyberghein L, Bosch S, Heroen V, SerrÃ£o E, De Clerck O, Tittensor D (2018). Bio-ORACLE v2.0: Extending marine data layers for bioclimatic modelling." _Global Ecology and Biogeography_, *27*(3),277-284. doi: 10.1111/geb.12693 (https://doi.org/10.1111/geb.12693). 
 
 Tyberghein L, Heroen V, Pauly K, Troupin C, Mineur F, De Clerck O (2012). Bio-ORACLE: a global environmental dataset for marine speciesdistribution modelling.\" _Global Ecology and Biogeography_, *21*(2),272-281. doi: 10.1111/j.1466-8238.2011.00656.x (https://doi.org/10.1111/j.1466-8238.2011.00656.x).
 
