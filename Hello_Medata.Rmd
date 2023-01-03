@@ -35,9 +35,9 @@ medata <- read_rds("data/medata.Rds")
 | `season`        | *fct* | The season in which the survey was conducted; levels: `Autumn`, `Spring`, `Summer` |
 | `lon`           | *num* | longitude (decimal degrees); approximate for Linosa, Kornati|
 | `lat`           | *num* | latitude (decimal degrees); approximate for Linosa, Kornati |
-| `site`          | *fct* | site names   |
+| `site`          | *fct* | site names |
 | `trans`         | *int* | transect number |
-| `protection`    | *logical* | inside MPA/unfished (`TRUE`)  or outside MPA/fished (`FALSE`); derived from `enforcement` level |
+| `protection`    | *logical* | inside MPA/unfished (`TRUE`) or outside MPA/fished (`FALSE`); derived from `enforcement` level |
 | `enforcement`   | *int* | type of enforcement. 3 levels: `1` = Minimal enforcement; `2` = Medium enforcement; `3` = Fully protected (strongest enforcement). Complements `protection` |
 | `total.mpa.ha`  | *num* | total MPA area in hactare; [Source for Ustica](http://www.parks.it/indice/RM/Eindex.php); [Source for Marettimo](http://www.ampisoleegadi.it/?idx=1620) |
 | `size.notake`   | *num* | area size of no-take zone (in ha); [Source for Ustica](http://www.mmmpa.eu/UST-MPA.asp) |
@@ -52,7 +52,7 @@ medata <- read_rds("data/medata.Rds")
 | `sp.length`     | *num* | length of fish in cm |
 | `a`             | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
 | `b`             | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
-| `family`        | *fct* | taxonomic family    |
+| `family`        | *fct* | taxonomic family  |
 | `exotic`        | *logical* | whether this species is local (indigenous, `FALSE`) or introduced (lessepsian migrant, `TRUE`) |
 | `FoodTroph`     | *num* | trophic level of the species. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
 | `FoodSeTroph`   | *num* | standard error for trophic level calculation (`FoodTroph`. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
