@@ -164,25 +164,19 @@ medata <- medata %>% select(-c("tmean", "trange", "sal_mean", "pp_mean", "pp_ran
 
 gc() # clear the memory for handling large files
 
-my.sites <- medata %>% dplyr::select(site, lon, lat)
 environment.layers <- sdmpredictors::load_layers(layercodes = c("BO_sstmean", # temperature
                                                                 "BO2_salinitymean_ss",  # salinity
                                                                 "BO22_ppmean_ss"), # productivity
                                                  datadir = "data/bio_oracle") 
 raster::plot(environment.layers)
 
-my.sites.environment <- bind_cols(my.sites, 
-                                  raster::extract(environment.layers, my.sites[,2:3]))
+medata <- bind_cols(medata, 
+                    raster::extract(environment.layers, medata[,4:5]))
 
-# Check for NAs
-my.sites.environment %>% 
-  dplyr::filter(!complete.cases(.)) %>% 
-  dplyr::distinct() %>% summarise(sites_with_NA = n())
+# Add unique transect identifier for each observation ---------------------
 
-
-medata <- medata %>%
-  left_join(my.sites.environment)
-
+medata <- medata %>% 
+  mutate(unique_trans_id = str_remove_all(paste0(site, trans, lon, lat, depth), "\\."))
 
 # Final checks and save ---------------------------------------------------
 
@@ -192,7 +186,7 @@ summary(medata)
 medata <- medata %>% 
   mutate(across(.cols = c("data.origin", "country", "season", "site", "enforcement", "yr.creation", 
                           "age.reserve.yr", "species", "family"), .fns = as.factor)) %>% 
-  select(data.origin, country, season, lon, lat, site, trans, 
+  select(data.origin, country, season, lon, lat, site, trans, unique_trans_id, 
          protection, enforcement, total.mpa.ha, size.notake, yr.creation, age.reserve.yr,
          depth, tmean = BO_sstmean, sal_mean = BO2_salinitymean_ss, pp_mean = BO22_ppmean_ss, 
          species, sp.n, sp.length, a, b, family, exotic, FoodTroph, FoodSeTroph)
