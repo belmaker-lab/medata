@@ -9,6 +9,7 @@ output:
     toc_depth: 3
     toc_float:
       collapsed: true
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 ---
 
 ```{r setup, include=FALSE}
@@ -28,34 +29,35 @@ medata <- read_rds("data/medata.Rds")
 
 # Variables
 
-| variable        | type  | comments                             |
-| :-------------- | :---: | :------------------------------------|
-| `data.origin`  | *fct* | azz_asi = Azzuro; azz_malta = Azzuro; Belmaker = Belmaker; Claudet = Claudet; Sala - PEW = Sala |
-| `country`       | *fct* | Country where `site` is located |
-| `season`        | *fct* | The season in which the survey was conducted; levels: `Autumn`, `Spring`, `Summer` |
-| `lon`           | *num* | longitude (decimal degrees); approximate for Linosa, Kornati|
-| `lat`           | *num* | latitude (decimal degrees); approximate for Linosa, Kornati |
-| `site`          | *fct* | site names |
-| `trans`         | *int* | transect number |
-| `protection`    | *logical* | inside MPA/unfished (`TRUE`) or outside MPA/fished (`FALSE`); derived from `enforcement` level |
-| `enforcement`   | *int* | type of enforcement. 3 levels: `1` = Minimal enforcement; `2` = Medium enforcement; `3` = Fully protected (strongest enforcement). Complements `protection` |
-| `total.mpa.ha`  | *num* | total MPA area in hactare; [Source for Ustica](http://www.parks.it/indice/RM/Eindex.php); [Source for Marettimo](http://www.ampisoleegadi.it/?idx=1620) |
-| `size.notake`   | *num* | area size of no-take zone (in ha); [Source for Ustica](http://www.mmmpa.eu/UST-MPA.asp) |
-| `yr.creation`   | *int* | MPA establishment year |
-| `age.reserve.yr`| *int* | age of the MPA in years (corresponds to `yr.creation`) - should be updated before used, since this is time, and time goes by... |
-| `depth`         | *num* | depth of survey in metres |
-| `tmean`         | *num* | annual mean sea surface temperature temperature (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `sal_mean`      | *num* | annual mean salinity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `pp_mean`       | *num* | annual mean primary productivity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
-| `species`       | *fct* | species scientific name (format: *Genus.species*); some species are identified to Genus level (includes 'spp' suffix)  or family level (includes -dae suffix) |
-| `sp.n`          | *int* | fish count - how many individuals of this species were observed? |
-| `sp.length`     | *num* | length of fish in cm |
-| `a`             | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
-| `b`             | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
-| `family`        | *fct* | taxonomic family  |
-| `exotic`        | *logical* | whether this species is local (indigenous, `FALSE`) or introduced (lessepsian migrant, `TRUE`) |
-| `FoodTroph`     | *num* | trophic level of the species. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
-| `FoodSeTroph`   | *num* | standard error for trophic level calculation (`FoodTroph`. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
+| variable         | type  | comments                             |
+| :--------------- | :---: | :------------------------------------|
+| `data.origin`    | *fct* | azz_asi = Azzuro; azz_malta = Azzuro; Belmaker = Belmaker; Claudet = Claudet; Sala - PEW = Enric Sala; Periklis_MER = Periklis Kleitou, MER Lab | 
+| `country`        | *fct* | Country where `site` is located |
+| `season`         | *fct* | The season in which the survey was conducted; levels: `Autumn`, `Spring`, `Summer` |
+| `lon`            | *num* | longitude (decimal degrees); approximate for Linosa, Kornati|
+| `lat`            | *num* | latitude (decimal degrees); approximate for Linosa, Kornati |
+| `site`           | *fct* | site name |
+| `trans`          | *int* | transect number |
+| `unique_trans_id`| *int* | unique identifier for each transect (unique site + transect + coordinates + depth) |
+| `protection`     | *logical* | inside MPA/unfished (`TRUE`) or outside MPA/fished (`FALSE`); linked to `enforcement` level |
+| `enforcement`    | *int* | type of enforcement. 3 levels: `1` = Minimal enforcement; `2` = Medium enforcement; `3` = Fully protected (strongest enforcement). Complements `protection` |
+| `total.mpa.ha`   | *num* | total MPA area in hactare; [Source for Ustica](http://www.parks.it/indice/RM/Eindex.php); [Source for Marettimo](http://www.ampisoleegadi.it/?idx=1620) |
+| `size.notake`    | *num* | area size of no-take zone (in ha); [Source for Ustica](http://www.mmmpa.eu/UST-MPA.asp) |
+| `yr.creation`    | *int* | MPA establishment year |
+| `age.reserve.yr` | *int* | age of the MPA in years (corresponds to `yr.creation`) at the time of survey |
+| `depth`          | *num* | depth of survey in meters |
+| `tmean`          | *num* | annual mean sea surface temperature temperature (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
+| `sal_mean`       | *num* | annual mean salinity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
+| `pp_mean`        | *num* | annual mean primary productivity (Source: [Bio-ORACLE](http://www.bio-oracle.org/index.php)) |
+| `species`        | *fct* | species scientific name (format: *Genus.species*); some species are identified to Genus level (includes 'spp' suffix)  or family level (includes -dae suffix) |
+| `sp.n`           | *int* | fish count - how many individuals of this species were observed? |
+| `sp.length`      | *num* | length of fish in cm |
+| `a`              | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
+| `b`              | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
+| `family`         | *fct* | taxonomic family  |
+| `exotic`         | *logical* | whether this species is local (indigenous, `FALSE`) or introduced (lessepsian migrant, `TRUE`) |
+| `FoodTroph`      | *num* | trophic level of the species. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
+| `FoodSeTroph`    | *num* | standard error for trophic level calculation (`FoodTroph`. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
 
 
 # Overview
@@ -67,7 +69,7 @@ skimr::skim(medata)
 
 ## Countries
 
-Data was collected from 8 countries:
+Data was collected from 9 countries:
 
 ```{r review the dataset}
 medata %>% distinct(country) %>% arrange(.$country) %>% print(n = Inf)
@@ -76,7 +78,7 @@ medata %>% distinct(country) %>% arrange(.$country) %>% print(n = Inf)
 
 ## Sites
 
-Data was collected from 67 unique sites:
+Data was collected from 72 sites:
 ```{r include=FALSE}
 medata %>% 
   dplyr::select(lon, lat, country, site) %>% 
@@ -88,7 +90,7 @@ medata %>%
 
 ## Species
 
-Dataset withholds 118 species
+Dataset withholds 124 species
 ```{r}
 medata %>% distinct(species) %>% arrange(.$species) %>% count()
 
@@ -98,12 +100,12 @@ medata %>% distinct(species) %>% arrange(.$species) %>%
   print(n = Inf)
 
 ```
-**NOTE**: There are 123 taxa in the dataset but some are not species but genus (Atherina.spp, Symphodus.spp) or family (Labridae, Clupeidae, Belonidae).
+**NOTE**: There are 135 taxa in the dataset but some are not species but genus (Atherina.spp, Symphodus.spp etc.) or family (Labridae, Clupeidae, Belonidae etc.).
 
 # Methods
 
 ## Data collection
-Visual fish census surveys took place between the years 2003-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of approximately 42,844 observations, in 2,069 transects, of 118 species of fish and includes mostly abundance data.
+Visual fish census surveys took place between the years 2009-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of approximately 42,844 observations, in 2,069 transects, of 118 species of fish and includes mostly abundance data.
 
 ```{r locations map, echo=FALSE}
 med_map <- sf::st_read("Med_World_Seas_IHO_v3_MarineRegions/Medit_seas_IHO.shp", quiet = TRUE)
@@ -112,13 +114,15 @@ ggplot(medata) +
   geom_sf(data = med_map$geometry, mapping = aes()) +
   geom_point(aes(x = lon, y = lat, fill = tmean), colour = "black", pch = 21,
              size = 5, alpha = 0.7) +
-  scale_fill_distiller(palette = "RdBu") +
+  fishualize::scale_fill_fish(option = "Serranus_scriba") +
+  # scale_fill_distiller(palette = "RdBu") +
   ggtitle(label = "Mediterranean fish surveys", subtitle = "Locations and temperatures") +
   xlab("Longitude") + 
   ylab("Latitude") +
   labs(fill = "Mean Annual Temp")
 
-```
+```  
+
 Figure 1. Survey sites and temperatures (in degrees celsius).
 
 The sampling protocol is described in [Frid Ori, et al., 2022]( https://doi.org/10.12681/mms.26423).
@@ -130,12 +134,10 @@ The sampling protocol is described in [Frid Ori, et al., 2022]( https://doi.org/
 __Layers__:
 
 - tmean = "BO_sstmean"
-- trange = "BO_sstrange"
 - sal_mean = "BO2_salinitymean_ss"
 - pp_mean = "BO2_ppmean_ss"
-- pp_range = "BO2_pprange_ss"
 
-(See "~/R/bio-oracle extraction code.R" for full extraction code).
+(See ["R/bio-oracle extraction code.R"](https://github.com/belmaker-lab/medata/blob/master/R/bio-oracle%20extraction%20code.R) for full extraction code).
 
 
 ## Data wrangling notes
@@ -143,6 +145,7 @@ __Layers__:
 * Linosa and kornati did not have specific coordinates, therefore, an approximate location (lat-lon) was attached to it. If your analysis requires fine-detail for the location, you might want to omit these locations.
 
 * Data from source `asinara_add` site are presence-absence only.
+
 
 ### Transformations
 Many analyses require species matrix where each row is a site and each column is a species.
@@ -153,7 +156,7 @@ Here's the code to create such matrix with this dataset:
 # Create a tibble of metadata
 med_meta <- medata %>% 
   distinct(country, site, lon, lat, season, protection, enforcement, total.mpa.ha, size.notake, 
-           yr.creation, age.reserve.yr, tmean, trange, sal_mean, pp_mean, pp_range)
+           yr.creation, age.reserve.yr, tmean, sal_mean, pp_mean)
 
 # Create a species matrix with summation of each species in each site (abundance)
 med_mat <- medata %>% 
@@ -166,7 +169,7 @@ full_med_mat <- left_join(med_meta, med_mat, by = c("site", "lon", "lat"))
 
 # Convert the abundance data to pseudo presence-absence
 pres_abs_mat <- full_med_mat
-pres_abs_mat[17:ncol(pres_abs_mat)] <- ifelse(pres_abs_mat[17:ncol(pres_abs_mat)] > 0, 1, 0) # col 17 is the 1st species
+pres_abs_mat[16:ncol(pres_abs_mat)] <- ifelse(pres_abs_mat[16:ncol(pres_abs_mat)] > 0, 1, 0) # col 176 is the 1st species
 
 
 ```
@@ -175,13 +178,15 @@ pres_abs_mat[17:ncol(pres_abs_mat)] <- ifelse(pres_abs_mat[17:ncol(pres_abs_mat)
 
 ## Species richness
 ```{r}
+col_scale <- fishualize::fish(n = 9, option = "Thalassoma_pavo")
 medata %>% 
   group_by(country, lon, lat) %>% 
   distinct(species) %>% summarise(richness = n()) %>% 
   ggplot() +
   geom_sf(data = med_map$geometry) +
-  geom_point(aes(x = lon, y = lat, size = richness, col = country), pch = 21, alpha = 0.3) +
-  labs(x = "", y = "", size = "Richness", col = "Country")
+  geom_point(aes(x = lon, y = lat, size = richness, col = country), pch = 21, alpha = 0.4) +
+  scale_colour_manual(values = col_scale, name = "Country") +
+  labs(x = "", y = "", size = "Richness")
 ```
 
 ## Lessepsian migrants

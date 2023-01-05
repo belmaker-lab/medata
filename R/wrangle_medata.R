@@ -192,10 +192,14 @@ medata <- medata %>%
          species, sp.n, sp.length, a, b, family, exotic, FoodTroph, FoodSeTroph)
 
 
+# Add data from Cyprus ----------------------------------------------------
+
+cyp_data <- read_csv("data/cyp_data_clean.csv") %>% 
+  mutate(across(.cols = c("data.origin", "country", "season", "site", "enforcement", "yr.creation", 
+                          "age.reserve.yr", "species", "family"), .fns = as.factor))
+
+medata <- bind_rows(medata, cyp_data)
+
+
+
 write_rds(medata, "data/medata.Rds")
-
-
-
-
-
-
