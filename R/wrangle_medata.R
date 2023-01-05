@@ -38,7 +38,7 @@ table(medata$protection)
 
 # Sites that are outside of MPAs (protection == FALSE) should have `total.mpa.ha` and `size.notake` set to NA
 medata <- medata %>% mutate(total.mpa.ha = ifelse(protection == FALSE & total.mpa.ha == 0, NA, total.mpa.ha),
-                              size.notake = ifelse(protection == FALSE & size.notake == 0, NA, size.notake))
+                            size.notake = ifelse(protection == FALSE & size.notake == 0, NA, size.notake))
 
 
 # Depth -------------------------------------------------------------------
@@ -81,7 +81,7 @@ species_list %>% arrange(species) %>% print(n = Inf)
 ## Add trophic information -------------------------------------------------
 
 species_diet <- rfishbase::ecology(species_list$species, 
-                        fields = c("Species", "DietTroph", "DietSeTroph", "FoodTroph", "FoodSeTroph"))
+                                   fields = c("Species", "DietTroph", "DietSeTroph", "FoodTroph", "FoodSeTroph"))
 
 # Species with missing FoodTroph also have missing DietTroph (except Parablennius zvonimiri)
 # so we'll keep 'FoodTroph' as it has less NAs (more information)
@@ -115,37 +115,30 @@ medata <- medata %>% mutate(family = case_when(str_detect(species, "Symphodus") 
                                                str_detect(species, "Tripterygion") ~ "Tripterygiidae",
                                                TRUE ~ as.character(family)))
 
-# Lessepsian migrants -----------------------------------------------------
+## Lessepsian migrants -----------------------------------------------------
 
 indie_species <- read_csv("data/exotic_species.csv")
 
 medata <- medata %>% left_join(indie_species)
 
-# Add Length-Weight ratio constants ---------------------------------------
+## Add Length-Weight ratio constants ---------------------------------------
 # relevant columns 'a' and 'b'
 rfishbase::length_weight(species_list$species) %>% colnames()
 
-missing_constants <- medata %>%
-  filter(is.na(a)) %>%
-  filter(is.na(b)) %>% 
-  distinct(species) %>% 
-  mutate(species = str_replace(.$species, pattern = "\\.", "\\ "))
-
-species_LW <- rfishbase::length_weight(missing_constants$species, 
-                            fields = c("Species", "a", "b", "Type", "Method")) %>% 
-  filter(Method == "type I linear regression" & Type == "TL" | Method == "Type I linear regression" & Type == "TL") %>% 
-  group_by(Species) %>% summarise(mean_a = mean(a), mean_b = mean(b)) %>% ungroup() %>% 
-  mutate(species = str_replace(.$Species, pattern = "\\ ", "\\.")) %>% 
-  select(-Species)
-
-# Add to medata
+species_med <- medata %>%
+  select(-a, -b) %>% 
+  transmute(species = str_replace(.$species, pattern = "\\.", "\\ ")) %>% 
+  distinct()
 
 medata <- medata %>% 
-  left_join(species_LW) %>% 
-  mutate(a = if_else(is.na(a), mean_a, a),
-         b = if_else(is.na(b), mean_b, b)) %>% 
-  select(-mean_a, -mean_b)
-
+  select(-a, -b) %>% 
+  left_join(
+    rfishbase::length_weight(species_med$species, fields = c("Species", "a", "b", "Type", "Method")) %>% 
+      filter(Method == "type I linear regression" & Type == "TL" | Method == "Type I linear regression" & Type == "TL") %>% 
+      group_by(Species) %>% summarise(mean_a = mean(a), mean_b = mean(b)) %>% ungroup() %>% arrange(Species) %>% 
+      rename(species = Species, a = mean_a, b = mean_b) %>% 
+      mutate(species = str_replace(.$species, pattern = "\\ ", "\\."))
+  )
 
 # Better site names for Crete expedition ----------------------------------
 # The Crete 'sites' are actually transects here. Separate them
@@ -200,6 +193,8 @@ cyp_data <- read_csv("data/cyp_data_clean.csv") %>%
 
 medata <- bind_rows(medata, cyp_data)
 
+# To make sure the biomass constants are correct and are the same as in the rest of MEDATA
+# I ran the script in lines 124-141 again
 
 
 write_rds(medata, "data/medata.Rds")
