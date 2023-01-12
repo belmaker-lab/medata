@@ -39,7 +39,7 @@ medata <- read_rds("data/medata.Rds")
 | `site`           | *fct* | site name |
 | `trans`          | *int* | transect number |
 | `unique_trans_id`| *int* | unique identifier for each transect (unique site + transect + coordinates + depth) |
-| `protection`     | *logical* | inside MPA/unfished (`TRUE`) or outside MPA/fished (`FALSE`); linked to `enforcement` level |
+| `protection`     | *lgl* | inside MPA/unfished (`TRUE`) or outside MPA/fished (`FALSE`); linked to `enforcement` level |
 | `enforcement`    | *int* | type of enforcement. 3 levels: `1` = Minimal enforcement; `2` = Medium enforcement; `3` = Fully protected (strongest enforcement). Complements `protection` |
 | `total.mpa.ha`   | *num* | total MPA area in hactare; [Source for Ustica](http://www.parks.it/indice/RM/Eindex.php); [Source for Marettimo](http://www.ampisoleegadi.it/?idx=1620) |
 | `size.notake`    | *num* | area size of no-take zone (in ha); [Source for Ustica](http://www.mmmpa.eu/UST-MPA.asp) |
@@ -55,10 +55,11 @@ medata <- read_rds("data/medata.Rds")
 | `a`              | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
 | `b`              | *num* | species length-weight relationship constant (Source: [FishBase](https://www.fishbase.de/summary/citation.php); Type = TL; using method 'Type I linear regression') |
 | `family`         | *fct* | taxonomic family  |
-| `exotic`         | *logical* | whether this species is local (indigenous, `FALSE`) or introduced (lessepsian migrant, `TRUE`) |
+| `exotic`         | *lgl* | whether this species is local (indigenous, `FALSE`) or introduced (lessepsian migrant, `TRUE`) |
 | `FoodTroph`      | *num* | trophic level of the species. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
-| `FoodSeTroph`    | *num* | standard error for trophic level calculation (`FoodTroph`. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)
+| `FoodSeTroph`    | *num* | standard error for trophic level calculation (`FoodTroph`. Extracted from [FishBase](https://www.fishbase.de/summary/citation.php)  
 
+- *Data types: num = decimal number; fct = factor; lgl = logical  
 
 # Overview
 
@@ -100,12 +101,12 @@ medata %>% distinct(species) %>% arrange(.$species) %>%
   print(n = Inf)
 
 ```
-**NOTE**: There are 135 taxa in the dataset but some are not species but genus (Atherina.spp, Symphodus.spp etc.) or family (Labridae, Clupeidae, Belonidae etc.).
+**NOTE**: There are 135 taxa in the dataset but some are not species but genus (Atherina.spp, Symphodus.spp etc.) or family (Labridae, Clupeidae, Belonidae etc.).  
 
 # Methods
 
 ## Data collection
-Visual fish census surveys took place between the years 2009-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of 44,754 observations, in 2,216 transects, of 135 species of fish and includes mostly abundance data.
+Visual fish census surveys took place between the years 2009-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of 46,664 observations, in 2,400 transects, of 135 species of fish and includes mostly abundance data.
 
 ```{r locations map, echo=FALSE}
 med_map <- sf::st_read("Med_World_Seas_IHO_v3_MarineRegions/Medit_seas_IHO.shp", quiet = TRUE)
