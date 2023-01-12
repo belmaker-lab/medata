@@ -27,14 +27,15 @@ cyp_data <- cyp_data %>%
                             between(lubridate::month(date), left = 9, right = 11) ~ "autumn"))
 
 # Transect info corrections
-cyp_data <- cyp_data %>% 
+cyp_data <- cyp_data %>%
   # Create Transect IDs without special characters, all lowercase + no spaces + distinction between depths
   mutate(trans_code = case_when(trans_code == "N4_R 15-30 m _T1" ~ "N4_R 15-30 m _T11",
                                 trans_code == "N4_R 15-30 m _T2" ~ "N4_R 15-30 m _T21",
                                 trans_code == "N4_R 15-30 m _T3" ~ "N4_R 15-30 m _T31",
-                                TRUE ~ as.character(trans_code))) %>% 
+                                trans_code == "CG6_R 0-5 m T3" & lat == 34.07540 ~ "CG6_R 0-5 m T300",
+                                TRUE ~ as.character(trans_code))) %>% # specific changes
   mutate(unique_trans_id = snakecase::to_snake_case(trans_code)) %>% # case correction
-  mutate(unique_trans_id = paste0(trans_code, depth)) %>% # depth distinction
+  mutate(unique_trans_id = paste0(unique_trans_id, depth)) %>% # depth distinction
   mutate(unique_trans_id = str_remove_all(unique_trans_id, "[^[:alnum:]]")) %>%
   # Merge trans and trans2
   mutate(transect = coalesce(trans2, as.character(trans)))
