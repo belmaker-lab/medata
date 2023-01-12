@@ -2496,31 +2496,29 @@ locations.</p></li>
 <li><p>Data from source <code>asinara_add</code> site are
 presence-absence only.</p></li>
 </ul>
-<div id="transformations" class="section level3">
-<h3>Transformations</h3>
+</div>
+</div>
+<div id="transformations" class="section level1">
+<h1>Transformations</h1>
 <p>Many analyses require species matrix where each row is a site and
 each column is a species.</p>
 <p>Here’s the code to create such matrix with this dataset:</p>
-<pre class="r"><code># Create a tibble of metadata
-med_meta &lt;- medata %&gt;% 
-  distinct(country, site, lon, lat, season, protection, enforcement, total.mpa.ha, size.notake, 
-           yr.creation, age.reserve.yr, tmean, sal_mean, pp_mean)
-
-# Create a species matrix with summation of each species in each site (abundance)
-med_mat &lt;- medata %&gt;% 
-  group_by(site, lon, lat, species) %&gt;% # Sites and species (with coordinate-locations) only
-  summarise(n = sum(sp.n)) %&gt;% 
-  spread(species, n, fill = 0)</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;site&#39;, &#39;lon&#39;, &#39;lat&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code># Put the 2 data sets together (species and metadata)
-full_med_mat &lt;- left_join(med_meta, med_mat, by = c(&quot;site&quot;, &quot;lon&quot;, &quot;lat&quot;))
+<pre class="r foldable"><code># Create a species matrix with where rows are transects and columns are species
+# (id_cols can be minimised but I keep it for explicitness)
+med_mat &lt;- medata %&gt;%
+  pivot_wider(id_cols = c(data.origin, country, season, lon, lat, site, trans, unique_trans_id, protection, enforcement, total.mpa.ha, size.notake, yr.creation, age.reserve.yr, depth, tmean, sal_mean, pp_mean), 
+              names_from = species, values_from = sp.n, 
+              values_fn = function(x) sum(x, na.rm = T), values_fill = 0)
 
 # Convert the abundance data to pseudo presence-absence
-pres_abs_mat &lt;- full_med_mat
-pres_abs_mat[16:ncol(pres_abs_mat)] &lt;- ifelse(pres_abs_mat[16:ncol(pres_abs_mat)] &gt; 0, 1, 0) # col 176 is the 1st species</code></pre>
-</div>
-</div>
+pres_abs_mat &lt;- med_mat
+first_species &lt;- which(colnames(med_mat) == &quot;Atherina.boyeri&quot;)
+pres_abs_mat[first_species:ncol(pres_abs_mat)] &lt;- ifelse(pres_abs_mat[first_species:ncol(pres_abs_mat)] &gt; 0, 1, 0)</code></pre>
+<p>Just pay attention that here there is also metadata in the left
+columns (until the first species). Some ecological anaylses require the
+data to be a real matrix (only made of one type of data - the abundance
+of each species), and in this case just make sure you separate the
+meta-data from the species matrix.</p>
 </div>
 <div id="view-the-data" class="section level1">
 <h1>View the data</h1>

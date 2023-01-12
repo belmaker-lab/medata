@@ -147,32 +147,29 @@ __Layers__:
 * Data from source `asinara_add` site are presence-absence only.
 
 
-### Transformations
+# Transformations
 Many analyses require species matrix where each row is a site and each column is a species.
 
 Here's the code to create such matrix with this dataset:
 
-```{r create species matrix}
-# Create a tibble of metadata
-med_meta <- medata %>% 
-  distinct(country, site, lon, lat, season, protection, enforcement, total.mpa.ha, size.notake, 
-           yr.creation, age.reserve.yr, tmean, sal_mean, pp_mean)
+```{r create species matrix, class.source = 'foldable'}
 
-# Create a species matrix with summation of each species in each site (abundance)
-med_mat <- medata %>% 
-  group_by(site, lon, lat, species) %>% # Sites and species (with coordinate-locations) only
-  summarise(n = sum(sp.n)) %>% 
-  spread(species, n, fill = 0)
-
-# Put the 2 data sets together (species and metadata)
-full_med_mat <- left_join(med_meta, med_mat, by = c("site", "lon", "lat"))
+# Create a species matrix with where rows are transects and columns are species
+# (id_cols can be minimised but I keep it for explicitness)
+med_mat <- medata %>%
+  pivot_wider(id_cols = c(data.origin, country, season, lon, lat, site, trans, unique_trans_id, protection, enforcement, total.mpa.ha, size.notake, yr.creation, age.reserve.yr, depth, tmean, sal_mean, pp_mean), 
+              names_from = species, values_from = sp.n, 
+              values_fn = function(x) sum(x, na.rm = T), values_fill = 0)
 
 # Convert the abundance data to pseudo presence-absence
-pres_abs_mat <- full_med_mat
-pres_abs_mat[16:ncol(pres_abs_mat)] <- ifelse(pres_abs_mat[16:ncol(pres_abs_mat)] > 0, 1, 0) # col 176 is the 1st species
+pres_abs_mat <- med_mat
+first_species <- which(colnames(med_mat) == "Atherina.boyeri")
+pres_abs_mat[first_species:ncol(pres_abs_mat)] <- ifelse(pres_abs_mat[first_species:ncol(pres_abs_mat)] > 0, 1, 0)
 
 
 ```
+
+Just pay attention that here there is also metadata in the left columns (until the first species). Some ecological anaylses require the data to be a real matrix (only made of one type of data - the abundance of each species), and in this case just make sure you separate the meta-data from the species matrix.
 
 # View the data
 
