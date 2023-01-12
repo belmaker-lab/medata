@@ -106,7 +106,7 @@ medata %>% distinct(species) %>% arrange(.$species) %>%
 # Methods
 
 ## Data collection
-Visual fish census surveys took place between the years 2009-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of 46,664 observations, in 2,400 transects, of 135 species of fish and includes mostly abundance data.
+Visual fish census surveys took place between the years 2009-2019 in multiple locations along the Mediterranean Sea (figure 1) by teams of skilled SCUBA divers. Locations were comprised of sites within MPAs with varying size, age and enforcement level, and unprotected sites which are adjacent to these MPAs. To date, the database consists of 44,754 observations, in 2,270 transects, of 135 species of fish and includes mostly abundance data.
 
 ```{r locations map, echo=FALSE}
 med_map <- sf::st_read("Med_World_Seas_IHO_v3_MarineRegions/Medit_seas_IHO.shp", quiet = TRUE)

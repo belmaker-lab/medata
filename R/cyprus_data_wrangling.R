@@ -26,8 +26,23 @@ cyp_data <- cyp_data %>%
                             between(lubridate::month(date), left = 6, right = 8) ~ "summer",
                             between(lubridate::month(date), left = 9, right = 11) ~ "autumn"))
 
+# Correct reserves data
+cyp_data <- cyp_data %>% 
+  # Correct creation year
+  rename(year_create = yr.creation) %>% 
+  mutate(year = str_extract(year_create, "\\d\\d")) %>%
+  mutate(yr.creation = as.integer(paste0("20", year))) %>% 
+  # Correct reserve age column = survey_year - establish_year
+  mutate(age.reserve.yr = if_else(yr.creation < lubridate::year(date), lubridate::year(date) - yr.creation, 0)) %>% 
+  # Change enforcement: Okrotiri = 3 (no fishing regulations) &  Akamas = 2 (some fishing restrictions)
+  mutate(enforcement = case_when(site == "Akrotiri" ~ 3,
+                                 site == "Akamas" ~ 2,
+                                 TRUE ~ as.numeric(enforcement)))
+
 # Transect info corrections
 cyp_data <- cyp_data %>%
+  # Merge trans and trans2
+  mutate(transect = coalesce(trans2, as.character(trans))) %>% 
   # Create Transect IDs without special characters, all lowercase + no spaces + distinction between depths
   mutate(trans_code = case_when(trans_code == "N4_R 15-30 m _T1" ~ "N4_R 15-30 m _T11",
                                 trans_code == "N4_R 15-30 m _T2" ~ "N4_R 15-30 m _T21",
@@ -35,10 +50,9 @@ cyp_data <- cyp_data %>%
                                 trans_code == "CG6_R 0-5 m T3" & lat == 34.07540 ~ "CG6_R 0-5 m T300",
                                 TRUE ~ as.character(trans_code))) %>% # specific changes
   mutate(unique_trans_id = snakecase::to_snake_case(trans_code)) %>% # case correction
-  mutate(unique_trans_id = paste0(unique_trans_id, depth)) %>% # depth distinction
-  mutate(unique_trans_id = str_remove_all(unique_trans_id, "[^[:alnum:]]")) %>%
-  # Merge trans and trans2
-  mutate(transect = coalesce(trans2, as.character(trans)))
+  mutate(unique_trans_id = paste0(unique_trans_id, transect, depth, lubridate::year(date))) %>% # depth and year distinction
+  mutate(unique_trans_id = str_remove_all(unique_trans_id, "[^[:alnum:]]"))
+  
 
 # Species corrections to Medata format
 cyp_data <- cyp_data %>% 
@@ -87,19 +101,6 @@ species_troph <- species_diet %>%
   select(species, FoodTroph, FoodSeTroph)
 
 cyp_data <- cyp_data %>% left_join(species_troph)
-
-# Correct reserves data
-cyp_data <- cyp_data %>% 
-  # Correct creation year
-  rename(year_create = yr.creation) %>% 
-  mutate(year = str_extract(year_create, "\\d\\d")) %>% 
-  mutate(yr.creation = as.integer(paste0("20",year))) %>% 
-  # Correct reserve age column = survey_year - establish_year
-  mutate(age.reserve.yr = if_else(yr.creation < lubridate::year(date), lubridate::year(date) - yr.creation, 0)) %>% 
-  # Change enforcement: Okrotiri = 3 (no fishing regulations) &  Akamas = 2 (some fishing restrictions)
-  mutate(enforcement = case_when(site == "Akrotiri" ~ 3,
-                                 site == "Akamas" ~ 2,
-                                 TRUE ~ as.numeric(enforcement)))
 
 # Remove irrelevant columns and reorganise to the same format as medata
 cyp_data <- cyp_data %>% 
