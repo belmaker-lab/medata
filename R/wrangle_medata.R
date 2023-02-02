@@ -198,3 +198,4 @@ medata <- bind_rows(medata, cyp_data)
 
 
 write_rds(medata, "data/medata.Rds")
+write_csv(medata, "data/medata.csv")
