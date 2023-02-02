@@ -2,7 +2,7 @@ library(tidyverse)
 medata <- read_rds("data/medata.Rds")
 
 cyp_data <- read_csv("data/Cyprus_Data_DecCoords.csv") %>% 
-  mutate(lon = Y, lat = X) %>% 
+  mutate(lon = X, lat = Y) %>% 
   select(-X, -Y)
 # Original data had coordinates in DMT format, I converted them to decimal using QGIS
 
